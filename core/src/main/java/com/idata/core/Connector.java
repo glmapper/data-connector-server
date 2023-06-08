@@ -2,7 +2,7 @@ package com.idata.core;
 
 import com.idata.common.enums.SourceType;
 
-public interface Connector {
+public interface Connector<T,R> {
     /**
      * 用于初始化资源
      */
@@ -14,5 +14,5 @@ public interface Connector {
      */
     SourceType sourceType();
 
-    void sync(Object origin, Object target);
+    void sync(R origin, T target);
 }

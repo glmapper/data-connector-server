@@ -1,24 +1,33 @@
 package com.idata.core;
 
+import com.idata.core.mapper.ResultSetMapper;
+
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResultSetExtractor<T> {
 
-    private final RowMapper<T> rowMapper;
+    Class<T> t;
 
-    public ResultSetExtractor(RowMapper<T> rowMapper) {
-        this.rowMapper = rowMapper;
+//    private final RowMapper<T> rowMapper;
+
+    public ResultSetExtractor(Class<T> t) {
+        this.t = t;
     }
 
-    public List<T> extractData(ResultSet resultSet) throws SQLException {
+    public List<T> extractData(ResultSet resultSet, Class<T> objectType) throws Exception {
         List<T> resultList = new ArrayList<>();
+        ResultSetMapper<T> resultSetMapper = new ResultSetMapper();
         while (resultSet.next()) {
-            T mappedObject = rowMapper.mapRow(resultSet);
+            T mappedObject = resultSetMapper.resultSetToJavaObject(resultSet, objectType);
+            //T mappedObject = rowMapper.mapRow(resultSet);
             resultList.add(mappedObject);
         }
         return resultList;
+    }
+
+    public Class getClassType() {
+        return t;
     }
 }

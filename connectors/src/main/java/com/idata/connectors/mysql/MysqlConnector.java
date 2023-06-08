@@ -4,7 +4,9 @@ import com.idata.common.ConnectorHelper;
 import com.idata.common.ConnectorSource;
 import com.idata.common.annotations.Table;
 import com.idata.common.enums.SourceType;
-import com.idata.core.*;
+import com.idata.core.Connector;
+import com.idata.core.Convertor;
+import com.idata.core.ResultSetExtractor;
 import com.idata.core.sql.SqlTemplate;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -27,13 +29,10 @@ public class MysqlConnector<T, R> implements Connector {
      */
     private Convertor<T, R> convertor;
 
-    private RowMapper<T> rowMapper;
     /**
      * 原始库的池
      */
     private DataSource originDataSource;
-
-    Syncer syncer;
 
     /**
      * 目标库的池
@@ -73,9 +72,8 @@ public class MysqlConnector<T, R> implements Connector {
             PreparedStatement preparedStatement = connection.prepareStatement("select * from " + tableName);
             ResultSet resultSet = preparedStatement.executeQuery();
             // 将 ResultSet 转成 R
-            RowMapper<R> rowMapper = RowMapperFactory.getRowMapper(origin.getClass());
-            ResultSetExtractor<R> extractor = new ResultSetExtractor<>(rowMapper);
-            List<R> result = extractor.extractData(resultSet);
+            ResultSetExtractor<R> extractor = (ResultSetExtractor<R>) new ResultSetExtractor<>(origin.getClass());
+            List<R> result = extractor.extractData(resultSet, extractor.getClassType());
 
             // 将 R 转成 T
             List<T> targetResult = convertor.batchConvertFrom(result);

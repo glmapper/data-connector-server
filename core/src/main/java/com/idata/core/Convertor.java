@@ -21,6 +21,12 @@ public interface Convertor<T, R> {
      */
     R convertTo(T target);
 
+    /**
+     * 批量转换
+     * @param origin
+     * @return
+     * @throws SQLException
+     */
     List<T> batchConvertFrom(List<R> origin) throws SQLException;
 
     /**
@@ -31,5 +37,10 @@ public interface Convertor<T, R> {
      */
     List<R> batchConvertTo(List<T> target);
 
+    /**
+     * 业务类型，现在没用来之前考虑是通过 SPI 机制，在 ConvertorFactory 中直接 load 到所有的 Convertor
+     *
+     * @return
+     */
     String bizType();
 }
