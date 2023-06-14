@@ -13,10 +13,13 @@ import java.util.List;
  */
 public class JmltConvertor implements Convertor<StandardMdjfModel, JmltModel> {
 
-
     @Override
     public StandardMdjfModel convertFrom(JmltModel origin) throws SQLException {
-        return null;
+        StandardMdjfModel standardMdjfModel = new StandardMdjfModel();
+        standardMdjfModel.setEmail(origin.getEmail());
+        standardMdjfModel.setId(origin.getId());
+        standardMdjfModel.setName(origin.getName());
+        return standardMdjfModel;
     }
 
     @Override

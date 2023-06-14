@@ -9,7 +9,7 @@ import java.io.FileInputStream;
  * 连接源
  */
 @Data
-public class ConnectorSource {
+public class ConnectorSourceConfigs {
     /**
      * 原始源
      */

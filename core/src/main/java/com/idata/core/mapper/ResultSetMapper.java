@@ -1,5 +1,9 @@
 package com.idata.core.mapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -15,6 +19,8 @@ import java.util.Map;
  * @since 1.0
  */
 public class ResultSetMapper<T> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetMapper.class);
 
     /**
      * 将 ResultSet 映射到 Java Object
@@ -41,18 +47,17 @@ public class ResultSetMapper<T> {
      */
     private T mapResultSetToObject(Map<String, Object> resultMap, Class<T> objectType) throws Exception {
         T object = objectType.newInstance();
-
         for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
             String fieldName = entry.getKey();
             Object value = entry.getValue();
-
             try {
-                objectType.getDeclaredField(fieldName).set(object, value);
+                Field declaredField = objectType.getDeclaredField(fieldName);
+                declaredField.setAccessible(true);
+                declaredField.set(object, value);
             } catch (NoSuchFieldException e) {
-                e.printStackTrace();
+                LOGGER.error("ignore exception, fieldName: " + fieldName + ", objectType: " + objectType);
             }
         }
-
         return object;
     }
 
@@ -65,10 +70,8 @@ public class ResultSetMapper<T> {
      */
     private Map<String, Object> resultSetToMap(ResultSet resultSet) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-
         // 获取 ResultSet 的元数据
         int columnCount = resultSet.getMetaData().getColumnCount();
-
         // 遍历每一列，将列名和值存储到 Map 中
         for (int i = 1; i <= columnCount; i++) {
             String columnName = resultSet.getMetaData().getColumnName(i);

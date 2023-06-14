@@ -3,22 +3,76 @@ package com.idata.core.sql;
 import com.idata.common.annotations.Colum;
 import com.idata.common.annotations.Table;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SqlTemplate<T> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SqlTemplate.class);
+
     private static Map<Class, Field[]> cacheFieldMap = new ConcurrentHashMap<>();
 
     private static String SQL = "INSERT INTO %s";
+
+    private final DataSource dataSource;
+
+    public SqlTemplate(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     private T obj;
 
     public void setObj(T obj) {
         this.obj = obj;
+    }
+
+    /**
+     * 查询条数
+     *
+     * @param sql
+     * @return
+     */
+    public int count(String sql) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = this.dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt(1);
+        } catch (SQLException e) {
+            LOGGER.error("error to count, sql: " + sql, e);
+            return 0;
+        } finally {
+            // 这里需要释放链接
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
+
+    public ResultSet select(String sql) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = this.dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return resultSet;
+        } catch (SQLException e) {
+            LOGGER.error("error to execute select, sql: " + sql, e);
+            return null;
+        } finally {
+            // 这里不能关闭，因为 RS 还没有处理，如果这里关闭可能会抛出 Operation not allowed after ResultSet closed 异常
+        }
     }
 
     /**
@@ -33,6 +87,7 @@ public class SqlTemplate<T> {
         if (declaredAnnotation != null) {
             String tableName = declaredAnnotation.name();
             insertSql = String.format(SQL, tableName);
+            System.out.println(insertSql);
         }
         Field[] fields = null;
         if (cacheFieldMap.containsKey(this.obj.getClass())) {
@@ -42,18 +97,22 @@ public class SqlTemplate<T> {
         }
         // 可以用缓存, Class -> Fields
         String[] fieldNames = new String[fields.length];
-
         for (int i = 0; i < fields.length; i++) {
+            System.out.println("-----" + i);
             Field field = fields[i];
             Colum filedNameAnno = field.getDeclaredAnnotation(Colum.class);
+            if (filedNameAnno == null) {
+                continue;
+            }
             String columName = filedNameAnno.name();
-            Object value = field.get(this.obj);
             fieldNames[i] = columName;
         }
-
         SqlModel sqlModel = new SqlModel();
         sqlModel.setFields(fieldNames);
-        return buildInsertStatement(insertSql, sqlModel);
+        String pstmSql = buildInsertStatement(insertSql, sqlModel);
+        System.out.println(pstmSql);
+        return pstmSql;
+
     }
 
     /**
@@ -106,6 +165,8 @@ public class SqlTemplate<T> {
             sb.append("?");
         }
         sb.append(")");
+        System.out.println(fieldNames);
+        ;
         return sb.toString();
     }
 

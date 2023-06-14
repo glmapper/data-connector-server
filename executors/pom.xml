@@ -33,5 +33,16 @@
             <artifactId>guava</artifactId>
             <version>31.1-jre</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.idata</groupId>
+            <artifactId>Jmlt</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

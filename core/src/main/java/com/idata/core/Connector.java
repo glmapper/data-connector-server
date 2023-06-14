@@ -14,5 +14,5 @@ public interface Connector<T,R> {
      */
     SourceType sourceType();
 
-    void sync(R origin, T target);
+    void sync(Class<T> origin, Class<R> target);
 }
