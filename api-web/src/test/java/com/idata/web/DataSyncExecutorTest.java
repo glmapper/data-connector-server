@@ -32,12 +32,12 @@ public class DataSyncExecutorTest {
         origin.setDatabase("glmapper");
         origin.setUrl(url);
         origin.setUsername("root");
-        origin.setPassword("glmapper@2018");
+        origin.setPassword("abc123");
         ConnectorSourceConfigs.InnerSource target = new ConnectorSourceConfigs.InnerSource();
         target.setDatabase("glmapper");
         target.setUrl(url);
         target.setUsername("root");
-        target.setPassword("glmapper@2018");
+        target.setPassword("abc123");
 
         configs.setBizType("jmlt");
         configs.setSourceType(SourceType.MYSQL57);

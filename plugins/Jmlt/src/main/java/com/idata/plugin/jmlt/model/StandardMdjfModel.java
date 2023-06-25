@@ -1,4 +1,4 @@
-package com.idata.common.model;
+package com.idata.plugin.jmlt.model;
 
 import com.idata.common.annotations.Colum;
 import com.idata.common.annotations.Table;

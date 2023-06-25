@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>
@@ -25,6 +26,16 @@ public class RowObjectEventHandler<T> implements EventHandler<RowObjectEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RowObjectEventHandler.class);
 
     private DataSource targetDataSource;
+
+    AtomicInteger INCR = new AtomicInteger(1000);
+
+    public int getRandIncrNo() {
+        if (INCR.get() == 9999) {
+            INCR.set(1000);
+        }
+        return INCR.incrementAndGet();
+    }
+
 
     public RowObjectEventHandler(DataSource targetDataSource) {
         this.targetDataSource = targetDataSource;

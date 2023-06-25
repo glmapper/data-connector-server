@@ -1,7 +1,7 @@
 package com.idata.plugin.jmlt;
 
 import com.idata.common.ConnectorSourceConfigs;
-import com.idata.common.model.StandardMdjfModel;
+import com.idata.plugin.jmlt.model.StandardMdjfModel;
 import com.idata.connectors.mysql.MysqlConnector;
 import com.idata.core.Connector;
 import com.idata.core.Convertor;

@@ -1,6 +1,6 @@
 package com.idata.plugin.jmlt;
 
-import com.idata.common.model.StandardMdjfModel;
+import com.idata.plugin.jmlt.model.StandardMdjfModel;
 import com.idata.core.Convertor;
 import com.idata.plugin.jmlt.model.JmltModel;
 
